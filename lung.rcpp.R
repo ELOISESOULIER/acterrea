@@ -44,6 +44,7 @@ Rcpp::NumericVector PH2OPH2O(PH2O);
 Rcpp::NumericVector Pb0Pb0(Pb0);
 Rcpp::NumericVector VcVc(Vc);
 Rcpp::NumericVector taubtaub(taub);
+//std :: cout << taubtaub << std::endl;
 Rcpp::NumericVector sigmasigma(sigma);
 Rcpp::NumericVector g0g0(g0);
 Rcpp::NumericVector CC(C);
@@ -121,7 +122,7 @@ for(int i = 1; i <= NN[0]; i++) {
   sat = pow(PaPa, 2.5) / (pow(26, 2.5) + pow(PaPa, 2.5));
   sat = sat - pow(Pb0Pb0[0], 2.5) / (pow(26, 2.5) + pow(Pb0Pb0[0], 2.5));
   // Hill, end
-  dVO2 = 4 * CC[0]  * sat * VcVc[0]  / taubtaub[0];
+  dVO2 = 4 * CC[0]  * sat * VcVc[0]  / taubtaub[i];
   dVO2 = dVO2 * 22.4;
   if (dVdV[i] > 0) {
     test = 1;
