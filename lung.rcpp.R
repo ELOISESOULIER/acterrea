@@ -18,6 +18,7 @@ Sample.Rcpp <- cxxfunction(signature(
   Pb0 = "numeric",
   Vc = "numeric",
   taub = "numeric",
+  taubBreak = "numeric",
   sigma = "numeric",
   g0 = "numeric",
   C = "numeric",
@@ -25,7 +26,9 @@ Sample.Rcpp <- cxxfunction(signature(
   fexp = "numeric",
   V0 = "numeric",
   G0 = "numeric",
-  T = "numeric", 
+  T = "numeric",
+  TBreak = "numeric",
+  tchar = "numeric",
   dt = "numeric"
 ), body = "
 Rcpp::NumericVector RVRV(RV);
@@ -44,7 +47,7 @@ Rcpp::NumericVector PH2OPH2O(PH2O);
 Rcpp::NumericVector Pb0Pb0(Pb0);
 Rcpp::NumericVector VcVc(Vc);
 Rcpp::NumericVector taubtaub(taub);
-//std :: cout << taubtaub << std::endl;
+Rcpp::NumericVector taubBreaktaubBreak(taubBreak);
 Rcpp::NumericVector sigmasigma(sigma);
 Rcpp::NumericVector g0g0(g0);
 Rcpp::NumericVector CC(C);
@@ -52,17 +55,20 @@ Rcpp::NumericVector finspfinsp(finsp);
 Rcpp::NumericVector fexpfexp(fexp);
 Rcpp::NumericVector V0V0(V0); 
 Rcpp::NumericVector G0G0(G0);
-Rcpp::NumericVector TT(T); 
+Rcpp::NumericVector TT(T);
+Rcpp::NumericVector TTbb(TBreak);
+Rcpp::NumericVector Tchar(tchar); 
 Rcpp::NumericVector dtdt(dt);
 
-Rcpp::IntegerVector NN(1);
+int NN;
 NN = floor(TT[0] / dtdt[0]);
-Rcpp::NumericVector tt(NN[0] + 1);
-Rcpp::NumericVector pp(NN[0] + 1);
+int NNbb;
+NNbb = floor(TTbb[0] / dtdt[0]);
+Rcpp::NumericVector tt(NN + 1);
+Rcpp::NumericVector pp(NN + 1);
 Rcpp::NumericVector fltt(1);
 
-
-for(int i = 0; i <= NN[0]; i++) {
+for(int i = 0; i <= NN; i++) {
   tt[i] = i * dtdt[0];
   fltt = floor(tt[i] / 5);
   if (tt[i] / 5 - fltt[0] < 0.35) {
@@ -72,15 +78,15 @@ for(int i = 0; i <= NN[0]; i++) {
   }
 }
 
-Rcpp::NumericVector VV(NN[0] + 1);
-Rcpp::NumericVector dVdV(NN[0] + 1);
-Rcpp::NumericVector dVO2dVO2(NN[0] + 1);
-Rcpp::NumericVector dWdW(NN[0] + 1);
-Rcpp::NumericVector gggg(NN[0] + 1);
-Rcpp::NumericVector pplppl(NN[0] + 1);
-Rcpp::NumericVector ppappa(NN[0] + 1);
+Rcpp::NumericVector VV(NN + 1);
+Rcpp::NumericVector dVdV(NN + 1);
+Rcpp::NumericVector dVO2dVO2(NN + 1);
+Rcpp::NumericVector dWdW(NN + 1);
+Rcpp::NumericVector gggg(NN + 1);
+Rcpp::NumericVector pplppl(NN + 1);
+Rcpp::NumericVector ppappa(NN + 1);
 
-Rcpp::NumericMatrix output(NN[0] + 1, 4);
+Rcpp::NumericMatrix output(NN + 1, 4);
 
 VV[0] = V0V0[0];
 dVdV[0] = 0;
@@ -88,6 +94,7 @@ dVO2dVO2[0] = 0;
 dWdW[0] = 0;
 gggg[0] = G0G0[0];
 
+double tau;
 double Ptot;
 double lambda;
 double c;
@@ -98,9 +105,14 @@ double dVO2;
 double VTC0;
 int test;
 
+tau = taubtaub[0];
+
 VTC0 = RVRV[0] + 0.5 * (TLCTLC[0] - RVRV[0]) ; 
 
-for(int i = 1; i <= NN[0]; i++) {
+for(int i = 1; i <= NN; i++) {
+  if (i > NNbb) {
+    taubtaub[0] = tau + (taubBreaktaubBreak[0] - tau) * ( 1 - exp(-(i * dtdt[0] - TTbb[0]) / Tchar[0]) );
+  }
   // Elas, begin
   c = 1 / (TLCTLC[0] - FRCFRC[0]) -  1 / (FRCFRC[0] - RVRV[0]);
   lambda = E0E0[0] / (pow(TLCTLC[0] - FRCFRC[0], -2) +  pow(FRCFRC[0] - RVRV[0], -2)); 
@@ -122,7 +134,7 @@ for(int i = 1; i <= NN[0]; i++) {
   sat = pow(PaPa, 2.5) / (pow(26, 2.5) + pow(PaPa, 2.5));
   sat = sat - pow(Pb0Pb0[0], 2.5) / (pow(26, 2.5) + pow(Pb0Pb0[0], 2.5));
   // Hill, end
-  dVO2 = 4 * CC[0]  * sat * VcVc[0]  / taubtaub[i];
+  dVO2 = 4 * CC[0]  * sat * VcVc[0]  / taubtaub[0];
   dVO2 = dVO2 * 22.4;
   if (dVdV[i] > 0) {
     test = 1;
@@ -142,6 +154,8 @@ return(output);
 ", plugin = "Rcpp")
 
 Sample <- function(T, dt,
+                   TBreak = T,
+                   tchar = T,
                    RV = 1.2,
                    TLC = 6,
                    FRC = 2.64,
@@ -158,6 +172,7 @@ Sample <- function(T, dt,
                    Pb0 = 40,
                    Vc = 0.07,
                    taub = 0.75,
+                   taubBreak = taub,
                    sigma = 1.4e-6,
                    g0 = 0.2,
                    C = 2.2e-3,
@@ -166,7 +181,7 @@ Sample <- function(T, dt,
                    V0 = FRC,
                    G0 = 0.15) {
   OUT <- Sample.Rcpp(RV, TLC, FRC, ETC0, El0, Elmax, Pplmax, I, E0, R, a0, Pat, PH2O, Pb0,
-                     Vc, taub, sigma, g0, C, finsp, fexp, V0, G0, T, dt)
+                     Vc, taub, taubBreak, sigma, g0, C, finsp, fexp, V0, G0, T, TBreak, tchar, dt)
   OUT[-1, ]
 }
 
