@@ -44,7 +44,7 @@ data[['new_trajec']] = rep(one_trajec, nb_simu)
 thres_mean = 5e-5
 X0 = 0.0042
 thres_gal = 0.0004
-data = transform(data, Y1 = ifelse(abs(X - cum_mean) > threshold_mean , 1, 0))
+data = transform(data, Y1 = ifelse(abs(X - cum_mean) > thres_mean , 1, 0))
 data = transform(data, Y2 = ifelse(abs(X - X0) > thres_gal , 1, 0))
 data = transform(data, Y = ifelse(Y1 + Y2 >= 1 , 1, 0))
 
