@@ -4,11 +4,11 @@ graphics.off()
 
 T <- 200
 dt <- 0.01
-tt <- seq(dt, T, by = dt)
+tt <- seq(dt, T, by = dt) - dt
 
 simulate <- function(nn, T  = 200, dt = 0.01) {
   ## preliminary
-  blocks <- floor(seq(dt, T, by = dt)/5)
+  blocks <- floor(seq(0, T - dt, by = dt)/5)
   ## random component
   taub <- runif(nn, min = 0.7, max = 0.8)
   accident <- rbinom(nn, 1, prob = 1/10)
