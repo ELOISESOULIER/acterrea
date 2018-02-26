@@ -21,7 +21,7 @@ nb_t = length(out_O2[['X1']])
 # Making the dataset
 data = out_O2[[1]]
 cummean = cumsum(data) / seq(1, nb_t, 1)
-cum_means = c(data[1], cummean[-1])
+cum_means = c(data[1], head(cummean,-1))
 
 for (i in 2:nb_simu){
     data_simu = out_O2[[i]]
@@ -29,7 +29,7 @@ for (i in 2:nb_simu){
     
     # Compute cumulated mean
     cummean = cumsum(data_simu) / seq(1, nb_t, 1)
-    cummean = c(data_simu[1], cummean[-1]) # On décale d'un cran pour avoir les moyennes des (t-1) valeurs
+    cummean = c(data_simu[1], head(cummean,-1)) # On décale d'un cran pour avoir les moyennes des (t-1) valeurs
     cum_means = c(cum_means, cummean)
 }
 data = data.frame(data)
@@ -41,10 +41,10 @@ one_trajec = c(1, rep(0, nb_t - 1))
 data[['new_trajec']] = rep(one_trajec, nb_simu)
 
 # -- Accident --
-thres_mean = 5e-5
-X0 = 0.0042
+thres_mean = sd(data$cum_mean) #5e-5
+X0 = mean(data$cum_mean) #0.0042
 thres_gal = 0.0004
-data = transform(data, Y1 = ifelse(abs(X - cum_mean) > threshold_mean , 1, 0))
+data = transform(data, Y1 = ifelse(abs(X - cum_mean) > thres_mean , 1, 0))
 data = transform(data, Y2 = ifelse(abs(X - X0) > thres_gal , 1, 0))
 data = transform(data, Y = ifelse(Y1 + Y2 >= 1 , 1, 0))
 
