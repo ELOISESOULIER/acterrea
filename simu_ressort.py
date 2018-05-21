@@ -2,13 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pickle
 import itertools
+import pandas as pd
+import tqdm
 
 
 def compute_ressort(T, dt, V_0, V_1, F, k, Vmin, Vmax, noise=False, sigma=0):
     """ Ressort perturbé
         d^2V(t)/dt^2 = -kV - F dV/dt
     """
-
     V = np.zeros((T, ))
     V[0] = V_0
     V[1] = V_1
@@ -20,7 +21,7 @@ def compute_ressort(T, dt, V_0, V_1, F, k, Vmin, Vmax, noise=False, sigma=0):
         if abs(V[t]) < Vmin:
             F = - F
         elif abs(V[t]) > Vmax:
-            F= - F
+            F = - F
 
     return V
 
@@ -69,6 +70,7 @@ def load_obj(name):
     with open(name, 'rb') as f:
         return pickle.load(f)
 
+
 def save_several_param_ressort(N, T, dt, list_k, list_F, list_Vmin, list_Vmax, path_save=None):
     """ Simuler N ressort poyr chaque jeu de parametres """
 
@@ -85,3 +87,20 @@ def save_several_param_ressort(N, T, dt, list_k, list_F, list_Vmin, list_Vmax, p
     if not path_save:
         path_save = "./data/ressort/simus.pkl"
     save_obj(all_simus, path_save)
+
+
+def transform_simus_to_df(all_simus, nmax=None):
+    """ Mettre les simus sous forme de DataFrame
+        - nmax: nombre de simulations à transformer en DataFrame
+    """
+    
+    if not nmax:  # Par defaut on met tout
+        nmax = all_simus[0]['N']
+        
+    sets = []
+    for simu in tqdm.tqdm(all_simus):
+        df = pd.DataFrame(simu['simu'].T)  # .T pour transposee, on a pris la convention dans l'autre sens
+        df.columns = ['V' + str(i) for i in range(simu['simu'].shape[0])]
+        df = df[['V' + str(i) for i in range(nmax)]]
+        sets.append(df)
+    return sets
