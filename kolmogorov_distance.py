@@ -36,4 +36,5 @@ def meanks(V1, V2):
 
 def compute_kolmogorov_dist(V1, V2):
     pvalue = meanks(V1, V2)
-    return np.mean(pvalue)
+    # 1 - () to have a distance and not a similarity
+    return 1 - np.mean(pvalue)
