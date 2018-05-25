@@ -51,9 +51,9 @@ def plot_ressort(V, F=None, k=None, Vmin=None, Vmax=None):
     plt.ylabel("Position du ressort")
     plt.xlabel("t")
     if F and k and Vmax and Vmin:
-        plt.title("F={}, k={}, Vmin={}, Vmax={}".format(item['F'], item['k'], item['Vmin'], item['Vmax']))
+        plt.title("F={}, k={}, Vmin={}, Vmax={}".format(F, k, Vmin, Vmax))
     elif F and k:
-        plt.title("F={}, k={}".format(item['F'], item['k']))
+        plt.title("F={}, k={}".format(F, k))
     else:
         plt.title("Position du ressort au cours du temps")
     plt.show()
