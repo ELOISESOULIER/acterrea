@@ -34,7 +34,17 @@ def meanks(V1, V2):
 
     return pvalues
 
-def compute_kolmogorov_dist(V1, V2):
+def compute_kolmogorov_dist(V1, V2, weights=None):
     pvalue = meanks(V1, V2)
+
+    if weights is not None:
+        if len(weights) == len(pvalue):
+            sim = [weights[i] * pvalue[i] for i in range(len(pvalue))]
+            sim = np.mean(sim)
+        else:
+            print("lenght of weights and descriptors should be equal")
+    else:
+        sim = np.mean(pvalue)
+
     # 1 - () to have a distance and not a similarity
-    return 1 - np.mean(pvalue)
+    return 1 - sim
