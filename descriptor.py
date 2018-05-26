@@ -12,7 +12,7 @@ def spectral_moment(V,i):
 def compute_descriptor(V):
     """ Return a list of descriptors of the signal V """
 
-    descriptors = [np.mean(V), np.std(V), np.min(V), np.max(V)]
+    descriptors = [np.mean(V), np.std(V)]
 
     signal = abs(np.fft.fft(V))
     freq = np.fft.fftfreq(len(V))
