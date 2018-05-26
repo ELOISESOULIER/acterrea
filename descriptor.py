@@ -33,6 +33,7 @@ def compute_descriptor(V):
     descriptors.append(SL)
     SP = (-3*mu1**4 + 6*mu1*mu2 - 4*mu1*mu3 +mu4)/SL**4 - 3 #spectral platitude
     descriptors.append(SP)
+    SA = (2*mu1**3 - 3*mu1*mu2 + mu3)/SL**3 #Spectral asymetry
     
 
     return np.array(descriptors)
