@@ -38,8 +38,8 @@ def compute_descriptor(V):
     
     y = V - np.mean(V)
     norm = np.sum(y ** 2)
-    autocorr = np.correlate(y, y, mode='full')/norm
-    descriptors.append(autocorr)
+    autocorr = np.correlate(y, y)/norm
+    descriptors.append(autocorr[0])
 
     return np.array(descriptors)
 
