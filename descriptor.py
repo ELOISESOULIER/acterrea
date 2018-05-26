@@ -36,10 +36,10 @@ def compute_descriptor(V):
     SA = (2*mu1**3 - 3*mu1*mu2 + mu3)/SL**3 #Spectral asymetry
     descriptors.append(SA)
     
-    y = V - np.mean(V)
-    norm = np.sum(y ** 2)
-    autocorr = np.correlate(y, y)/norm
-    descriptors.append(autocorr[0])
+    #y = V - np.mean(V)
+    #norm = np.sum(y ** 2)
+    #autocorr = np.correlate(y, y)/norm
+    #descriptors.append(autocorr[0])
 
     return np.array(descriptors)
 

@@ -43,14 +43,13 @@ def compute_wasserstein_distance(set1, set2, dist_function=dist_norm, weights=No
     desc1 = [compute_descriptor(s1) for s1 in arr1]
     desc2 = [compute_descriptor(s2) for s2 in arr2]
 
-    if weights is not None and (len(weights) != len(pvalue)):
+    if weights is not None and (len(weights) != len(compute_descriptor([0]))):
         print("lenght of weights and descriptors should be equal")
         return None
 
     if weights is not None:
         dist_class = DistWeights(weights)
-        dist_fucntion = dist_class.dist
-        print("Weights used")
+        dist_function = dist_class.dist
 
     indexes, total_cost = distance_EMD(desc1, desc2, dist_function)
 
@@ -58,7 +57,7 @@ def compute_wasserstein_distance(set1, set2, dist_function=dist_norm, weights=No
 
 class DistWeights(object):
     """docstring fos DistWeights"""
-    def __init__(self, arg):
+    def __init__(self, weights):
         self.weights = weights
 
     def dist(self, a, b):
